@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        .imgDiv{
+            display: flex;
+            flex-direction: column;
+            border: 1px;
+            border-radius: 10px;
+            border-style: groove;
+            border-color: black;
+            margin: 10px;
+            padding: 15px;
+            width: 300px;
+        }
+        .deleteButton{
+                width: 100px;
+                align-self: center;
+                background: red;
+                color: white;
+                border-color: red;
+                border-radius: 5px;
+                margin-top: 20px;
+                
+        }
+        .submitButton{
+            margin-top: 10px;
+            background: black;
+            color: white;
+            border-radius: 5px;
+            height: 30px;
+            width: 100px;
+        }
+        .inputUrl{
+            margin: 5px 20px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div style="display: flex;
+                flex-direction: column;
+                border-width: 1px;
+                border-style: groove;
+                padding: 10px;
+                border-color: black;
+                border-radius: 10px;
+                align-items: center;">
+        <input class="inputUrl" type="text" id="urlInput"/>
+        <button class="submitButton" type="button" onclick="buttonClickedAddNew()" name="Submit">Submit</button>
+    </div>
+
+
+    <div style="overflow-x: auto;" id="mainImgDiv" >
+    </div>
+
+</body>
+<script>
+    const queryString = window.location.search;
+    //console.log(queryString);
+    const urlParams = new URLSearchParams(queryString);
+    var count = urlParams.get('count');
+    //console.log(count);
+    
+    if (count != null){
+        count = Number(count);
+        for (var i = 1; i <= count ; i++){
+            var url = urlParams.get("url"+ String(i));
+            
+            var n  = document.createElement("div");
+            n.setAttribute("id", "imgDivUrl" + String(i));
+            n.setAttribute("class" , "imgDiv");
+            document.getElementById("mainImgDiv").appendChild(n);
+
+            var q = document.createElement("img");
+            q.setAttribute('src', url);
+            document.getElementById("imgDivUrl" + String(i)).appendChild(q);
+            var q = document.createElement("button");
+            q.setAttribute('class', "deleteButton");
+            q.setAttribute('onClick', `removeUrl("${i}")`);
+            q.innerHTML="Delete";
+            document.getElementById("imgDivUrl" + String(i)).appendChild(q);
+        }
+    }
+    function buttonClickedAddNew(){
+        var url = document.getElementById("urlInput").value;
+        if (url){
+            if (count == null){
+                window.location.replace(window.location.pathname + `?count=1&url1=${url}`);
+            }
+            else{
+                console.log(window.location.href);//count)
+                var arr = [];
+                let queryString = new URLSearchParams(window.location.href);
+                for(let pair of queryString.entries()) {
+                    arr.push(pair[0]);
+                    arr.push(pair[1]);
+                }
+                console.log(arr);
+                var news = "";
+                for (var i = 0; i < arr.length; i ++){
+                    if (i == 1){
+                        news = news + String(count +1) +"&";
+                    }
+                    else if (i %2 == 0 ){
+                        news = news + arr[i] + "=";
+                    }
+                    else{
+                        news = news + arr[i] + "&";
+                    }
+                }
+                news = news + "url" + String(count+1) + "=" + url;
+                window.location.replace(news);
+                //console.log(news);
+            }
+        }
+    }
+    function removeUrl(url){
+        var allUrls = [];
+        const urlParams = new URLSearchParams(window.location.href);
+        for (var i = 1; i <= count ; i ++){
+            allUrls.push(urlParams.get("url" + String(i)));
+        }
+        allUrls.splice(url-1,1);
+        console.log(allUrls);
+
+        var news = window.location.pathname+ "?count=" + String(count-1) + "&";
+        for (var i = 1; i <= allUrls.length; i++){
+            news = news + "&url" + String(i) + "=" + allUrls[i-1];
+        }
+        console.log(news);
+        window.location.replace(news);
+    }
+</script>
+
+</html>
